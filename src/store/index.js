@@ -1,15 +1,16 @@
-// third-party
-import { configureStore } from '@reduxjs/toolkit';
+import { applyMiddleware, compose, createStore } from 'redux'
+import createSagaMiddleware from 'redux-saga'
+import rootReducer from './reducers'
+import rootSaga from './sagas'
 
-// project import
-import reducers from './reducers';
+const sagaMiddleware = createSagaMiddleware()
 
-// ==============================|| REDUX TOOLKIT - MAIN STORE ||============================== //
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
-const store = configureStore({
-  reducer: reducers
-});
+const enhancer = composeEnhancers(applyMiddleware(sagaMiddleware))
 
-const { dispatch } = store;
+const store = createStore(rootReducer, enhancer)
 
-export { store, dispatch };
+sagaMiddleware.run(rootSaga)
+
+export default store

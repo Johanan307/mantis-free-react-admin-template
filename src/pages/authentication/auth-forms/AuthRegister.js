@@ -1,7 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-
-// material-ui
+import { useEffect, useState } from 'react'
+import { Link as RouterLink } from 'react-router-dom'
 import {
   Box,
   Button,
@@ -9,48 +7,47 @@ import {
   FormControl,
   FormHelperText,
   Grid,
-  Link,
   IconButton,
   InputAdornment,
   InputLabel,
+  Link,
   OutlinedInput,
   Stack,
-  Typography
-} from '@mui/material';
-
-// third party
-import * as Yup from 'yup';
-import { Formik } from 'formik';
-
-// project import
-import FirebaseSocial from './FirebaseSocial';
-import AnimateButton from 'components/@extended/AnimateButton';
-import { strengthColor, strengthIndicator } from 'utils/password-strength';
-
-// assets
-import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
-
-// ============================|| FIREBASE - REGISTER ||============================ //
+  Typography,
+} from '@mui/material'
+import * as Yup from 'yup'
+import { Formik } from 'formik'
+import AnimateButton from 'components/@extended/AnimateButton'
+import { strengthColor, strengthIndicator } from 'utils/password-strength'
+import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons'
+import { useDispatch, useSelector } from 'react-redux'
+import * as registerActions from './logic/actions'
 
 const AuthRegister = () => {
-  const [level, setLevel] = useState();
-  const [showPassword, setShowPassword] = useState(false);
+  const [level, setLevel] = useState()
+  const [showPassword, setShowPassword] = useState(false)
   const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+    setShowPassword(!showPassword)
+  }
+
+  const dispatch = useDispatch()
+
+  const auth = useSelector((state) => state?.auth)
+
+  console.log(auth)
 
   const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
+    event.preventDefault()
+  }
 
   const changePassword = (value) => {
-    const temp = strengthIndicator(value);
-    setLevel(strengthColor(temp));
-  };
+    const temp = strengthIndicator(value)
+    setLevel(strengthColor(temp))
+  }
 
   useEffect(() => {
-    changePassword('');
-  }, []);
+    changePassword('')
+  }, [])
 
   return (
     <>
@@ -59,47 +56,67 @@ const AuthRegister = () => {
           firstname: '',
           lastname: '',
           email: '',
-          company: '',
           password: '',
-          submit: null
+          submit: null,
         }}
         validationSchema={Yup.object().shape({
           firstname: Yup.string().max(255).required('First Name is required'),
           lastname: Yup.string().max(255).required('Last Name is required'),
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-          password: Yup.string().max(255).required('Password is required')
+          email: Yup.string()
+            .email('Must be a valid email')
+            .max(255)
+            .required('Email is required'),
+          password: Yup.string().max(255).required('Password is required'),
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
-            setStatus({ success: false });
-            setSubmitting(false);
+            const emailAndNamesAndPassword = {
+              // firstname: values.firstname,
+              // lastname: values.lastname,
+              email: values.email,
+              password: values.password,
+            }
+
+            dispatch(registerActions.register(emailAndNamesAndPassword))
+            setStatus({ success: false })
+            setSubmitting(false)
           } catch (err) {
-            console.error(err);
-            setStatus({ success: false });
-            setErrors({ submit: err.message });
-            setSubmitting(false);
+            console.error(err)
+            setStatus({ success: false })
+            setErrors({ submit: err.message })
+            setSubmitting(false)
           }
         }}
       >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+        {({
+          errors,
+          handleBlur,
+          handleChange,
+          handleSubmit,
+          isSubmitting,
+          touched,
+          values,
+        }) => (
           <form noValidate onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="firstname-signup">First Name*</InputLabel>
+                  <InputLabel htmlFor='firstname-signup'>
+                    First Name*
+                  </InputLabel>
                   <OutlinedInput
-                    id="firstname-login"
-                    type="firstname"
+                    id='firstname-login'
+                    type='firstname'
                     value={values.firstname}
-                    name="firstname"
+                    name='firstname'
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="John"
+                    placeholder='John'
                     fullWidth
                     error={Boolean(touched.firstname && errors.firstname)}
                   />
                   {touched.firstname && errors.firstname && (
-                    <FormHelperText error id="helper-text-firstname-signup">
+                    <FormHelperText error id='helper-text-firstname-signup'>
                       {errors.firstname}
                     </FormHelperText>
                   )}
@@ -107,21 +124,21 @@ const AuthRegister = () => {
               </Grid>
               <Grid item xs={12} md={6}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="lastname-signup">Last Name*</InputLabel>
+                  <InputLabel htmlFor='lastname-signup'>Last Name*</InputLabel>
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.lastname && errors.lastname)}
-                    id="lastname-signup"
-                    type="lastname"
+                    id='lastname-signup'
+                    type='lastname'
                     value={values.lastname}
-                    name="lastname"
+                    name='lastname'
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="Doe"
+                    placeholder='Doe'
                     inputProps={{}}
                   />
                   {touched.lastname && errors.lastname && (
-                    <FormHelperText error id="helper-text-lastname-signup">
+                    <FormHelperText error id='helper-text-lastname-signup'>
                       {errors.lastname}
                     </FormHelperText>
                   )}
@@ -129,42 +146,21 @@ const AuthRegister = () => {
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="company-signup">Company</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.company && errors.company)}
-                    id="company-signup"
-                    value={values.company}
-                    name="company"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Demo Inc."
-                    inputProps={{}}
-                  />
-                  {touched.company && errors.company && (
-                    <FormHelperText error id="helper-text-company-signup">
-                      {errors.company}
-                    </FormHelperText>
-                  )}
-                </Stack>
-              </Grid>
-              <Grid item xs={12}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="email-signup">Email Address*</InputLabel>
+                  <InputLabel htmlFor='email-signup'>Email Address*</InputLabel>
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.email && errors.email)}
-                    id="email-login"
-                    type="email"
+                    id='email-login'
+                    type='email'
                     value={values.email}
-                    name="email"
+                    name='email'
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="demo@company.com"
+                    placeholder='demo@company.com'
                     inputProps={{}}
                   />
                   {touched.email && errors.email && (
-                    <FormHelperText error id="helper-text-email-signup">
+                    <FormHelperText error id='helper-text-email-signup'>
                       {errors.email}
                     </FormHelperText>
                   )}
@@ -172,48 +168,60 @@ const AuthRegister = () => {
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="password-signup">Password</InputLabel>
+                  <InputLabel htmlFor='password-signup'>Password</InputLabel>
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.password && errors.password)}
-                    id="password-signup"
+                    id='password-signup'
                     type={showPassword ? 'text' : 'password'}
                     value={values.password}
-                    name="password"
+                    name='password'
                     onBlur={handleBlur}
                     onChange={(e) => {
-                      handleChange(e);
-                      changePassword(e.target.value);
+                      console.log(values)
+                      handleChange(e)
+                      changePassword(e.target.value)
                     }}
                     endAdornment={
-                      <InputAdornment position="end">
+                      <InputAdornment position='end'>
                         <IconButton
-                          aria-label="toggle password visibility"
+                          aria-label='toggle password visibility'
                           onClick={handleClickShowPassword}
                           onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                          size="large"
+                          edge='end'
+                          size='large'
                         >
-                          {showPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                          {showPassword ? (
+                            <EyeOutlined />
+                          ) : (
+                            <EyeInvisibleOutlined />
+                          )}
                         </IconButton>
                       </InputAdornment>
                     }
-                    placeholder="******"
+                    placeholder='******'
                     inputProps={{}}
                   />
                   {touched.password && errors.password && (
-                    <FormHelperText error id="helper-text-password-signup">
+                    <FormHelperText error id='helper-text-password-signup'>
                       {errors.password}
                     </FormHelperText>
                   )}
                 </Stack>
                 <FormControl fullWidth sx={{ mt: 2 }}>
-                  <Grid container spacing={2} alignItems="center">
+                  <Grid container spacing={2} alignItems='center'>
                     <Grid item>
-                      <Box sx={{ bgcolor: level?.color, width: 85, height: 8, borderRadius: '7px' }} />
+                      <Box
+                        sx={{
+                          bgcolor: level?.color,
+                          width: 290,
+                          height: 8,
+                          borderRadius: '7px',
+                        }}
+                      />
                     </Grid>
                     <Grid item>
-                      <Typography variant="subtitle1" fontSize="0.75rem">
+                      <Typography variant='subtitle1' fontSize='0.75rem'>
                         {level?.label}
                       </Typography>
                     </Grid>
@@ -221,13 +229,13 @@ const AuthRegister = () => {
                 </FormControl>
               </Grid>
               <Grid item xs={12}>
-                <Typography variant="body2">
+                <Typography variant='body2'>
                   By Signing up, you agree to our &nbsp;
-                  <Link variant="subtitle2" component={RouterLink} to="#">
+                  <Link variant='subtitle2' component={RouterLink} to='#'>
                     Terms of Service
                   </Link>
                   &nbsp; and &nbsp;
-                  <Link variant="subtitle2" component={RouterLink} to="#">
+                  <Link variant='subtitle2' component={RouterLink} to='#'>
                     Privacy Policy
                   </Link>
                 </Typography>
@@ -239,25 +247,66 @@ const AuthRegister = () => {
               )}
               <Grid item xs={12}>
                 <AnimateButton>
-                  <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
+                  <Button
+                    disableElevation
+                    disabled={isSubmitting}
+                    fullWidth
+                    size='large'
+                    type='submit'
+                    variant='contained'
+                    color='primary'
+                  >
                     Create Account
                   </Button>
                 </AnimateButton>
               </Grid>
               <Grid item xs={12}>
-                <Divider>
-                  <Typography variant="caption">Sign up with</Typography>
-                </Divider>
-              </Grid>
-              <Grid item xs={12}>
-                <FirebaseSocial />
+                <div
+                  style={{
+                    marginTop: 24,
+                  }}
+                >
+                  <Divider>
+                    <Typography style={{ fontSize: 13 }} variant='caption'>
+                      or
+                    </Typography>
+                  </Divider>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginTop: 12,
+                  }}
+                >
+                  <Typography variant='caption' style={{ fontSize: 13 }}>
+                    Already have a account?
+                  </Typography>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginTop: 5,
+                  }}
+                >
+                  <Typography
+                    component={RouterLink}
+                    to='/login'
+                    variant='body1'
+                    sx={{ textDecoration: 'none' }}
+                    color='primary'
+                  >
+                    Login
+                  </Typography>
+                </div>
               </Grid>
             </Grid>
           </form>
         )}
       </Formik>
     </>
-  );
-};
+  )
+}
 
-export default AuthRegister;
+export default AuthRegister
