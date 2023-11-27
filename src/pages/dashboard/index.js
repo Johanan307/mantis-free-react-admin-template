@@ -104,7 +104,7 @@ const DashboardDefault = () => {
         </>
       ) : (
         <>
-          {list?.length > 0 ? (
+          {list?.length > 0 && (
             <>
               {list.map((product) => (
                 <CustomCard
@@ -115,14 +115,24 @@ const DashboardDefault = () => {
                 />
               ))}
             </>
-          ) : (
-            <div>
-              <h1>{'noProjects'}</h1>
-            </div>
           )}
         </>
       )}
-      {error && <div>{'listError'}</div>}
+      {error && (
+        <Grid item xs={12} sx={{ mt: 2 }}>
+          <MainCard content={false}>
+            <Box sx={{ p: 3 }}>
+              <Typography variant='h6' color='error'>
+                Sorry er ging iets mis bij het laden van de projecten.
+              </Typography>
+              <Typography color='textSecondary'>
+                Controleer alstublieft uw internetverbinding en probeer het
+                opnieuw.
+              </Typography>
+            </Box>
+          </MainCard>
+        </Grid>
+      )}
       <Grid item xs={12} sx={{ mb: -2.25 }}>
         <Typography variant='h5'>Information</Typography>
       </Grid>
